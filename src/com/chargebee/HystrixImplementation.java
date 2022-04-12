@@ -28,6 +28,7 @@ public class HystrixImplementation {
         } else if (StatusCode.isFailureCode(statusCode)) {
             if(MAX_THRESHOLD_COUNT == hystrixProperties.getRetryCount()) {
                 hystrixProperties.setSleepTimeCounter(sleepTime + sleepTime);
+                recursiveRetry();
             } else if (MAX_THRESHOLD_COUNT < hystrixProperties.getRetryCount()) {
                 hystrixProperties.setRetryCount(hystrixProperties.getRetryCount() + 1);
                 recursiveRetry();

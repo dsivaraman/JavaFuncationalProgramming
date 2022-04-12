@@ -6,7 +6,7 @@ public class HystrixImplementation {
 
     public HystrixProperties hystrixProperties;
     public MockRestService mockRestService;
-    private int sleepTime = 1;
+    private int sleepTime = 0;
 
         public HystrixImplementation (HystrixProperties hystrixProperties , MockRestService mockRestService) {
             this.hystrixProperties = hystrixProperties;
@@ -16,15 +16,15 @@ public class HystrixImplementation {
 
     public void recursiveRetry() throws InterruptedException {
 
-        if (sleepTime > 0) {
-            Thread.sleep(sleepTime);
+        if (hystrixProperties.getSleepTimeCounter() > 1) {
+            Thread.sleep(hystrixProperties.getSleepTimeCounter());
         }
 
         int statusCode = mockRestService.execute();
 
         if (StatusCode.isSuccessCode(statusCode)) {
             hystrixProperties.setRetryCount(0);
-            sleepTime = 0;
+            sleepTime = hystrixProperties.getSleepTimeCounter();
         } else if (StatusCode.isFailureCode(statusCode)) {
             if(MAX_THRESHOLD_COUNT == hystrixProperties.getRetryCount()) {
                 hystrixProperties.setSleepTimeCounter(sleepTime + sleepTime);
